@@ -1,0 +1,20 @@
+{
+  "name": "Quest Planner Official Addon Registry",
+  "version": "1.0.0",
+  "updated": "2026-03-07",
+  "addons": [
+    {
+      "id": "developer-kit",
+      "name": "Addon Developer Kit",
+      "version": "1.0.0",
+      "author": "Quest Planner",
+      "description": "Documentation, scaffolder, validator, and preview tools for building Quest Planner addons.",
+      "category": "Development",
+      "icon": "puzzle",
+      "type": "community",
+      "minAppVersion": "3.0.0",
+      "downloadUrl": "https://github.com/nenadjokic/questplanner-addons/raw/main/packages/addon-developer-kit-1.0.0.qpa",
+      "repository": "https://github.com/nenadjokic/questplanner-addons"
+    }
+  ]
+}
