@@ -1,0 +1,269 @@
+/* ─── Discord Bot Addon Styles ─────────────────────────── */
+
+.discord-status-card {
+  border-left: 4px solid var(--border);
+}
+
+.discord-status-card.online {
+  border-left-color: var(--success, #2ecc71);
+}
+
+.discord-status-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.discord-status-indicator {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #95a5a6;
+  flex-shrink: 0;
+}
+
+.discord-status-indicator.online {
+  background: #2ecc71;
+  box-shadow: 0 0 8px rgba(46, 204, 113, 0.5);
+  animation: pulse-green 2s infinite;
+}
+
+.discord-status-indicator.connecting {
+  background: #f39c12;
+  animation: pulse-orange 1s infinite;
+}
+
+.discord-status-indicator.offline {
+  background: #95a5a6;
+}
+
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 4px rgba(46, 204, 113, 0.3); }
+  50% { box-shadow: 0 0 12px rgba(46, 204, 113, 0.6); }
+}
+
+@keyframes pulse-orange {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.discord-status-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.discord-bot-tag {
+  background: var(--bg-surface, #2a2a3e);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius, 6px);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-family: monospace;
+}
+
+.discord-status-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.discord-link-stats {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border, #3a3a4e);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* ─── Form Enhancements ──────────────────────────────────── */
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .form-row { grid-template-columns: 1fr; }
+}
+
+.form-hint {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.form-hint a {
+  color: var(--gold, #d4a843);
+}
+
+.optional-badge {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: normal;
+  font-style: italic;
+}
+
+/* ─── Toggle Group ───────────────────────────────────────── */
+
+.toggle-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 1rem 0;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: var(--radius, 6px);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.toggle-row:hover {
+  background: var(--bg-surface, rgba(255,255,255,0.03));
+}
+
+.toggle-row input[type="checkbox"] {
+  margin-top: 0.2rem;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--gold, #d4a843);
+}
+
+.toggle-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.toggle-label small {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+/* ─── Setup Guide ────────────────────────────────────────── */
+
+.setup-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.setup-step {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--gold, #d4a843);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  flex-shrink: 0;
+  font-size: 0.9rem;
+}
+
+.setup-step p {
+  margin: 0.3rem 0 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.setup-step code {
+  background: var(--bg-surface, #2a2a3e);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.85rem;
+}
+
+/* ─── Linked Accounts Table ──────────────────────────────── */
+
+.linked-accounts-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.linked-accounts-table th,
+.linked-accounts-table td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border, #3a3a4e);
+}
+
+.linked-accounts-table th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.linked-accounts-table .status-verified {
+  color: var(--success, #2ecc71);
+}
+
+.linked-accounts-table .status-pending {
+  color: var(--warning, #f39c12);
+}
+
+.btn-sm {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+}
+
+.btn-success {
+  background: #2ecc71;
+  color: #000;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius, 6px);
+}
+
+.btn-danger {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius, 6px);
+}
+
+.form-actions {
+  margin-top: 1.5rem;
+}
+
+#discord-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius, 6px);
+  color: #fff;
+  font-weight: 500;
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+
+#discord-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#discord-toast.success { background: #2ecc71; }
+#discord-toast.error { background: #e74c3c; }

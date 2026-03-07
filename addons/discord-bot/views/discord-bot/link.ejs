@@ -1,0 +1,104 @@
+<% const _v = Array.isArray(settings.views) ? settings.views[0] : settings.views; %>
+<%- include(_v + '/partials/head', { pageTitle: pageTitle }) %>
+
+<div class="page-header">
+  <h1><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> Discord Account Link</h1>
+  <a href="/" class="btn btn-outline">Back to Dashboard</a>
+</div>
+
+<div class="card">
+  <div id="discord-link-section">
+    <% if (link && link.verified_at) { %>
+      <p style="color: var(--success); font-size: 1.1rem; margin-bottom: 1rem;">&#10003; Your Discord account is linked to <strong><%= link.discord_username %></strong></p>
+      <p class="text-muted">You can vote on sessions directly from Discord using emoji reactions, and use all <code>/quest</code> slash commands.</p>
+      <form id="unlink-form" style="margin-top: 1rem;">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button type="submit" class="btn btn-danger btn-small">Unlink Discord Account</button>
+      </form>
+    <% } else { %>
+      <h3>How to Link Your Discord Account</h3>
+      <div class="setup-steps" style="margin: 1.5rem 0;">
+        <div class="setup-step">
+          <span class="step-number">1</span>
+          <div>
+            <strong>Open Discord</strong>
+            <p>Go to the Discord server where the Quest Planner bot is installed.</p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <span class="step-number">2</span>
+          <div>
+            <strong>Type the Link Command</strong>
+            <p>Type <code>/quest link <%= username %></code> and press Enter.</p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <span class="step-number">3</span>
+          <div>
+            <strong>Enter the Code Below</strong>
+            <p>The bot will give you a verification code. Enter it here:</p>
+          </div>
+        </div>
+      </div>
+
+      <form id="verify-form" style="max-width: 400px;">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="form-group">
+          <label for="discord-code">Verification Code</label>
+          <input type="text" id="discord-code" name="code" placeholder="e.g. A7X9K2"
+                 style="text-transform: uppercase; letter-spacing: 0.15em; font-family: monospace; font-size: 1.2rem;"
+                 maxlength="10" autocomplete="off">
+        </div>
+        <button type="submit" class="btn btn-primary">Verify & Link</button>
+      </form>
+      <p id="discord-verify-msg" style="margin-top: 0.75rem; font-size: 0.9rem;"></p>
+    <% } %>
+  </div>
+</div>
+
+<script>
+(function() {
+  function getCsrf() {
+    var el = document.querySelector('input[name="_csrf"]');
+    return el ? el.value : '';
+  }
+
+  var verifyForm = document.getElementById('verify-form');
+  if (verifyForm) {
+    verifyForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var code = document.getElementById('discord-code').value.trim();
+      if (!code) return;
+      fetch('/discord-bot/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrf() },
+        body: JSON.stringify({ code: code })
+      }).then(function(r) { return r.json(); }).then(function(data) {
+        var msg = document.getElementById('discord-verify-msg');
+        if (data.success) {
+          msg.style.color = 'var(--success)';
+          msg.textContent = data.message;
+          setTimeout(function() { location.reload(); }, 1000);
+        } else {
+          msg.style.color = 'var(--error, #e74c3c)';
+          msg.textContent = data.message;
+        }
+      });
+    });
+  }
+
+  var unlinkForm = document.getElementById('unlink-form');
+  if (unlinkForm) {
+    unlinkForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (!confirm('Unlink your Discord account?')) return;
+      fetch('/discord-bot/unlink', {
+        method: 'POST',
+        headers: { 'X-CSRF-Token': getCsrf() }
+      }).then(function() { location.reload(); });
+    });
+  }
+})();
+</script>
+
+<%- include(_v + '/partials/foot') %>

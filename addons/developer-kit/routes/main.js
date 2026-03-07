@@ -4,10 +4,8 @@ const fs = require('fs');
 const router = express.Router();
 
 function requireAdmin(req, res, next) {
-  if (!req.session || !req.session.userId) return res.redirect('/login');
-  const db = req.app.locals.db;
-  const user = db.prepare('SELECT role FROM users WHERE id = ?').get(req.session.userId);
-  if (!user || user.role !== 'admin') return res.status(403).send('Admin access required');
+  if (!req.user) return res.redirect('/login');
+  if (req.user.role !== 'admin') return res.status(403).send('Admin access required');
   next();
 }
 
@@ -21,7 +19,8 @@ function getDocsDir() {
 
 // Main page
 router.get('/', requireAdmin, (req, res) => {
-  res.render('developer-kit/developer-kit', {
+  const viewPath = require('path').join(__dirname, '..', 'views', 'developer-kit', 'developer-kit');
+  res.render(viewPath, {
     pageTitle: 'Addon Developer Kit'
   });
 });
@@ -193,18 +192,20 @@ module.exports = {
   // Routes
   if (config.includeRoutes) {
     const routeContent = `const express = require('express');
+const path = require('path');
 const router = express.Router();
 
-// Middleware: require login
+// Middleware: require login (uses req.user set by Quest Planner core)
 function requireLogin(req, res, next) {
-  if (!req.session || !req.session.userId) return res.redirect('/login');
+  if (!req.user) return res.redirect('/login');
   next();
 }
 
 router.get('/', requireLogin, (req, res) => {
-  const db = req.app.locals.db;
+  // const db = req.app.locals.addonManager.db;
   // const items = db.prepare('SELECT * FROM ${addonId.replace(/-/g, '_')}_data ORDER BY created_at DESC').all();
-  res.render('${addonId}/index', {
+  const viewPath = path.join(__dirname, '..', 'views', '${addonId}', 'index');
+  res.render(viewPath, {
     pageTitle: '${config.name}',
     items: []
   });
@@ -215,7 +216,8 @@ module.exports = router;
     archive.append(routeContent, { name: 'routes/main.js' });
 
     // View
-    const viewContent = `<%- include('../../partials/head', { pageTitle: pageTitle }) %>
+    const viewContent = `<% const _v = Array.isArray(settings.views) ? settings.views[0] : settings.views; %>
+<%- include(_v + '/partials/head', { pageTitle: pageTitle }) %>
 
 <div class="page-header">
   <h1><%= pageTitle %></h1>
@@ -240,7 +242,7 @@ module.exports = router;
   <% } %>
 </div>
 
-<%- include('../../partials/foot') %>
+<%- include(_v + '/partials/foot') %>
 `;
     archive.append(viewContent, { name: 'views/' + addonId + '/index.ejs' });
   }

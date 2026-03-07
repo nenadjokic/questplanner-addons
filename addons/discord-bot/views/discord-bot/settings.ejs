@@ -1,0 +1,162 @@
+<% const _v = Array.isArray(settings.views) ? settings.views[0] : settings.views; %>
+<%- include(_v + '/partials/head', { pageTitle: pageTitle }) %>
+
+<div class="page-header">
+  <h1><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> Discord Bot</h1>
+  <a href="/" class="btn btn-outline">Back to Dashboard</a>
+</div>
+
+<!-- Bot Status Card -->
+<div class="card discord-status-card">
+  <div class="discord-status-header">
+    <div class="discord-status-indicator <%= botStatus === 'online' ? 'online' : botStatus === 'connecting' ? 'connecting' : 'offline' %>"></div>
+    <div class="discord-status-info">
+      <strong>Bot Status: <span id="bot-status-text"><%= botStatus === 'online' ? 'Online' : botStatus === 'connecting' ? 'Connecting...' : 'Offline' %></span></strong>
+      <% if (botUsername) { %>
+        <span class="discord-bot-tag" id="bot-username"><%= botUsername %></span>
+      <% } %>
+    </div>
+    <div class="discord-status-actions">
+      <% if (botStatus === 'online') { %>
+        <button class="btn btn-sm btn-danger" onclick="controlBot('stop')">Stop Bot</button>
+      <% } else { %>
+        <button class="btn btn-sm btn-success" onclick="controlBot('start')">Start Bot</button>
+      <% } %>
+      <button class="btn btn-sm btn-outline" onclick="testNotification()">Send Test</button>
+    </div>
+  </div>
+  <div class="discord-link-stats">
+    <span><strong><%= linkedCount %></strong> / <%= totalUsers %> players linked</span>
+  </div>
+</div>
+
+<!-- Settings Form -->
+<div class="card">
+  <h2>Bot Configuration</h2>
+  <form id="discord-bot-form" onsubmit="saveSettings(event)">
+    <input type="hidden" name="_csrf" id="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+    <div class="form-group">
+      <label for="bot_token">Bot Token</label>
+      <input type="password" id="bot_token" name="bot_token" value="<%= settings.bot_token || '' %>"
+             placeholder="Your Discord Bot Token" class="form-control">
+      <small class="form-hint">From <a href="https://discord.com/developers/applications" target="_blank" rel="noopener">Discord Developer Portal</a> &rarr; Bot &rarr; Token</small>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="guild_id">Server (Guild) ID</label>
+        <input type="text" id="guild_id" name="guild_id" value="<%= settings.guild_id || '' %>"
+               placeholder="e.g. 123456789012345678" class="form-control">
+        <small class="form-hint">Right-click your Discord server &rarr; Copy Server ID</small>
+      </div>
+      <div class="form-group">
+        <label for="notification_channel_id">Notification Channel ID</label>
+        <input type="text" id="notification_channel_id" name="notification_channel_id"
+               value="<%= settings.notification_channel_id || '' %>"
+               placeholder="e.g. 123456789012345678" class="form-control">
+        <small class="form-hint">Channel for session notifications &amp; RSVP messages</small>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="dice_channel_id">Dice Roll Channel ID <span class="optional-badge">optional</span></label>
+      <input type="text" id="dice_channel_id" name="dice_channel_id"
+             value="<%= settings.dice_channel_id || '' %>"
+             placeholder="Leave empty to use notification channel" class="form-control">
+      <small class="form-hint">Separate channel for dice rolls (to avoid spam)</small>
+    </div>
+
+    <h3>Features</h3>
+
+    <div class="toggle-group">
+      <label class="toggle-row">
+        <input type="checkbox" name="enable_slash_commands" <%= settings.enable_slash_commands ? 'checked' : '' %>>
+        <span class="toggle-label">
+          <strong>Slash Commands</strong>
+          <small>/quest next, /quest roll, /quest party, etc.</small>
+        </span>
+      </label>
+
+      <label class="toggle-row">
+        <input type="checkbox" name="enable_emoji_rsvp" <%= settings.enable_emoji_rsvp ? 'checked' : '' %>>
+        <span class="toggle-label">
+          <strong>Emoji RSVP</strong>
+          <small>Players vote by reacting with number emojis on session announcements</small>
+        </span>
+      </label>
+
+      <label class="toggle-row">
+        <input type="checkbox" name="enable_dice_feed" <%= settings.enable_dice_feed ? 'checked' : '' %>>
+        <span class="toggle-label">
+          <strong>Dice Roll Feed</strong>
+          <small>Send /quest roll results to a Discord channel</small>
+        </span>
+      </label>
+
+      <label class="toggle-row">
+        <input type="checkbox" name="enable_live_notifications" <%= settings.enable_live_notifications ? 'checked' : '' %>>
+        <span class="toggle-label">
+          <strong>Live Notifications</strong>
+          <small>Session confirmed, quest revealed, loot discovered, combat started</small>
+        </span>
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Save Settings</button>
+    </div>
+  </form>
+</div>
+
+<!-- Linked Accounts -->
+<div class="card">
+  <h2>Linked Accounts</h2>
+  <p class="text-muted">Players link accounts by typing <code>/quest link &lt;username&gt;</code> in Discord, then entering the verification code in Quest Planner.</p>
+  <div id="linked-accounts-list">
+    <p class="text-muted">Loading...</p>
+  </div>
+</div>
+
+<!-- Setup Guide -->
+<div class="card">
+  <h2>Setup Guide</h2>
+  <div class="setup-steps">
+    <div class="setup-step">
+      <span class="step-number">1</span>
+      <div>
+        <strong>Create a Discord Bot</strong>
+        <p>Go to <a href="https://discord.com/developers/applications" target="_blank" rel="noopener">Discord Developer Portal</a>, create an application, add a Bot, and copy the token.</p>
+      </div>
+    </div>
+    <div class="setup-step">
+      <span class="step-number">2</span>
+      <div>
+        <strong>Enable Intents</strong>
+        <p>In Bot settings, enable <strong>Message Content Intent</strong> and <strong>Server Members Intent</strong>.</p>
+      </div>
+    </div>
+    <div class="setup-step">
+      <span class="step-number">3</span>
+      <div>
+        <strong>Invite Bot to Server</strong>
+        <p>Go to OAuth2 &rarr; URL Generator. Select scopes: <code>bot</code>, <code>applications.commands</code>. Permissions: Send Messages, Add Reactions, Embed Links, Read Message History. Copy the URL and open it to invite the bot.</p>
+      </div>
+    </div>
+    <div class="setup-step">
+      <span class="step-number">4</span>
+      <div>
+        <strong>Configure &amp; Start</strong>
+        <p>Paste your Bot Token and IDs above, save settings, and click Start Bot.</p>
+      </div>
+    </div>
+    <div class="setup-step">
+      <span class="step-number">5</span>
+      <div>
+        <strong>Link Accounts</strong>
+        <p>Each player types <code>/quest link username</code> in Discord, then enters the code in Quest Planner Profile page.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include(_v + '/partials/foot') %>

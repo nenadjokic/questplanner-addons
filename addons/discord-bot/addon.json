@@ -1,0 +1,34 @@
+{
+  "id": "discord-bot",
+  "name": "Discord Bot Integration",
+  "version": "1.0.0",
+  "icon": "send",
+  "category": "Integration",
+  "description": "Full Discord bot with slash commands, emoji RSVP, dice rolls, and live campaign notifications.",
+  "author": "Quest Planner",
+  "type": "community",
+  "minAppVersion": "3.0.0",
+  "routes": [
+    { "path": "/discord-bot", "file": "routes/main.js" }
+  ],
+  "navItems": [
+    {
+      "label": "Discord Bot",
+      "href": "/discord-bot",
+      "icon": "send",
+      "group": "tools",
+      "sort": 90,
+      "roles": ["admin"]
+    },
+    {
+      "label": "Discord Link",
+      "href": "/discord-bot/link",
+      "icon": "send",
+      "group": "tools",
+      "sort": 50,
+      "roles": ["admin", "dm", "player"]
+    }
+  ],
+  "css": ["css/discord-bot.css"],
+  "js": ["js/discord-bot.js"]
+}

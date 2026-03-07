@@ -15,6 +15,19 @@
       "minAppVersion": "3.0.0",
       "downloadUrl": "https://github.com/nenadjokic/questplanner-addons/raw/main/packages/developer-kit-1.0.0.qpa",
       "repository": "https://github.com/nenadjokic/questplanner-addons"
+    },
+    {
+      "id": "discord-bot",
+      "name": "Discord Bot Integration",
+      "version": "1.0.0",
+      "author": "Quest Planner",
+      "description": "Full Discord bot with slash commands, emoji RSVP, dice rolls, and live campaign notifications.",
+      "category": "Integration",
+      "icon": "send",
+      "type": "community",
+      "minAppVersion": "3.0.0",
+      "downloadUrl": "https://github.com/nenadjokic/questplanner-addons/raw/main/packages/discord-bot-1.0.0.qpa",
+      "repository": "https://github.com/nenadjokic/questplanner-addons"
     }
   ]
 }
