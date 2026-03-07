@@ -1,0 +1,213 @@
+/* Addon Developer Kit styles */
+
+.devkit-docs-layout {
+  display: flex;
+  gap: 1.5rem;
+  min-height: 500px;
+}
+
+.devkit-doc-nav {
+  flex-shrink: 0;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.devkit-doc-link {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.devkit-doc-link:hover {
+  background: var(--surface-elevated, rgba(255,255,255,0.05));
+  color: var(--text-primary);
+}
+
+.devkit-doc-link.active {
+  background: rgba(212, 168, 67, 0.1);
+  color: var(--gold);
+}
+
+.devkit-doc-content {
+  flex: 1;
+  min-width: 0;
+  padding: 1.5rem;
+  overflow-x: auto;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.devkit-doc-content h1 { font-size: 1.5rem; margin: 0 0 1rem; color: var(--gold); }
+.devkit-doc-content h2 { font-size: 1.2rem; margin: 1.5rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
+.devkit-doc-content h3 { font-size: 1rem; margin: 1.25rem 0 0.5rem; }
+.devkit-doc-content h4 { font-size: 0.9rem; margin: 1rem 0 0.5rem; color: var(--gold); }
+
+.devkit-doc-content code {
+  background: var(--surface-elevated, rgba(255,255,255,0.05));
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.85em;
+}
+
+.devkit-doc-content pre {
+  background: var(--bg-surface, #1a1a2e);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+
+.devkit-doc-content pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.devkit-doc-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+  font-size: 0.82rem;
+}
+
+.devkit-doc-content th,
+.devkit-doc-content td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.devkit-doc-content th {
+  background: var(--surface-elevated, rgba(255,255,255,0.03));
+  font-weight: 600;
+}
+
+.devkit-doc-content ul, .devkit-doc-content ol {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.devkit-doc-content li {
+  margin: 0.25rem 0;
+}
+
+.devkit-doc-content a {
+  color: var(--gold);
+}
+
+/* Scaffolder form */
+.devkit-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.devkit-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+}
+
+.devkit-checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* Validator */
+.devkit-validate-dropzone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.devkit-validate-dropzone:hover,
+.devkit-validate-dropzone.dragover {
+  border-color: var(--gold);
+  background: rgba(212, 168, 67, 0.05);
+}
+
+.devkit-validate-dropzone p {
+  margin: 0.75rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.devkit-check-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0;
+  font-size: 0.85rem;
+}
+
+.devkit-check-pass { color: var(--success, #4caf50); }
+.devkit-check-fail { color: var(--error, #f44336); }
+.devkit-check-detail { color: var(--text-secondary); font-size: 0.75rem; margin-left: 0.25rem; }
+
+.devkit-warning-item,
+.devkit-error-item {
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.82rem;
+  margin-bottom: 0.35rem;
+}
+
+.devkit-warning-item {
+  background: rgba(255, 193, 7, 0.08);
+  border-left: 3px solid rgba(255, 193, 7, 0.5);
+  color: var(--text-secondary);
+}
+
+.devkit-error-item {
+  background: rgba(244, 67, 54, 0.08);
+  border-left: 3px solid rgba(244, 67, 54, 0.5);
+  color: var(--text-secondary);
+}
+
+/* Preview */
+.devkit-code-block {
+  background: var(--bg-surface, #1a1a2e);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  font-size: 0.8rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: var(--text-primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .devkit-docs-layout {
+    flex-direction: column;
+  }
+  .devkit-doc-nav {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  .devkit-doc-nav hr,
+  .devkit-doc-nav span,
+  .devkit-doc-nav .btn {
+    display: none;
+  }
+  .devkit-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

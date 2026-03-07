@@ -1,0 +1,170 @@
+<%- include('../../partials/head', { pageTitle: 'Addon Developer Kit' }) %>
+
+<div class="page-header">
+  <h1>Addon Developer Kit</h1>
+  <a href="/" class="btn btn-outline">Back to Dashboard</a>
+</div>
+
+<div class="addons-tabs">
+  <button type="button" class="addons-tab active" data-tab="docs">Documentation</button>
+  <button type="button" class="addons-tab" data-tab="scaffold">Scaffolder</button>
+  <button type="button" class="addons-tab" data-tab="validate">Validator</button>
+  <button type="button" class="addons-tab" data-tab="preview">Registry Preview</button>
+</div>
+
+<!-- Documentation Tab -->
+<div class="addons-tab-content" id="tab-docs">
+  <div class="devkit-docs-layout">
+    <nav class="devkit-doc-nav">
+      <a href="#" class="devkit-doc-link active" data-doc="creating-addons">Creating Addons</a>
+      <a href="#" class="devkit-doc-link" data-doc="addon-api">Addon API Reference</a>
+      <a href="#" class="devkit-doc-link" data-doc="submission-guide">Submission Guide</a>
+      <hr style="border-color: var(--border); margin: 0.75rem 0;">
+      <span style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Download Files</span>
+      <a href="/developer-kit/docs/creating-addons/download" class="btn btn-small btn-outline" style="width:100%;margin-bottom:0.35rem;font-size:0.75rem;">CREATING-ADDONS.md</a>
+      <a href="/developer-kit/docs/addon-api/download" class="btn btn-small btn-outline" style="width:100%;margin-bottom:0.35rem;font-size:0.75rem;">ADDON-API.md</a>
+      <a href="/developer-kit/docs/submission-guide/download" class="btn btn-small btn-outline" style="width:100%;font-size:0.75rem;">SUBMISSION-GUIDE.md</a>
+    </nav>
+    <div class="devkit-doc-content card" id="doc-content">
+      <div style="text-align:center;padding:2rem;color:var(--text-secondary);">Loading documentation...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Scaffolder Tab -->
+<div class="addons-tab-content" id="tab-scaffold" style="display:none;">
+  <div class="card">
+    <h2 style="margin-top:0;">Addon Scaffolder</h2>
+    <p class="form-hint" style="margin-bottom:1.5rem;">Fill in the details below and generate a ready-to-develop .qpa addon package.</p>
+    <form id="scaffold-form">
+      <div class="devkit-form-grid">
+        <div class="form-group">
+          <label for="sc-name">Addon Name <span style="color:var(--error);">*</span></label>
+          <input type="text" id="sc-name" class="form-input" placeholder="Party Notes" required>
+        </div>
+        <div class="form-group">
+          <label for="sc-id">Addon ID <span style="color:var(--error);">*</span></label>
+          <input type="text" id="sc-id" class="form-input" placeholder="party-notes" required>
+          <small class="form-hint">Auto-generated from name. Lowercase, hyphens only.</small>
+        </div>
+        <div class="form-group">
+          <label for="sc-version">Version</label>
+          <input type="text" id="sc-version" class="form-input" value="1.0.0" placeholder="1.0.0">
+        </div>
+        <div class="form-group">
+          <label for="sc-author">Author</label>
+          <input type="text" id="sc-author" class="form-input" placeholder="Your Name">
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label for="sc-description">Description</label>
+          <textarea id="sc-description" class="form-input" rows="2" placeholder="A short description of what your addon does."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="sc-category">Category</label>
+          <select id="sc-category" class="form-input">
+            <option value="Gameplay">Gameplay</option>
+            <option value="Social">Social</option>
+            <option value="DM Tools">DM Tools</option>
+            <option value="Maps">Maps</option>
+            <option value="Utility">Utility</option>
+            <option value="Development">Development</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="sc-icon">Icon</label>
+          <select id="sc-icon" class="form-input">
+            <option value="puzzle">puzzle (default)</option>
+            <option value="scroll">scroll</option>
+            <option value="book">book</option>
+            <option value="globe">globe</option>
+            <option value="chest">chest</option>
+            <option value="journal">journal</option>
+            <option value="quest">quest</option>
+            <option value="image">image</option>
+            <option value="sword">sword</option>
+            <option value="sparkle">sparkle</option>
+            <option value="chart">chart</option>
+            <option value="megaphone">megaphone</option>
+            <option value="music">music</option>
+            <option value="dice">dice</option>
+            <option value="send">send</option>
+            <option value="key">key</option>
+            <option value="shield">shield</option>
+            <option value="bell">bell</option>
+          </select>
+        </div>
+      </div>
+
+      <h3 style="font-size:0.95rem;margin:1.5rem 0 0.75rem;">Include Components</h3>
+      <div class="devkit-checkboxes">
+        <label><input type="checkbox" id="sc-routes" checked> Express Routes + View</label>
+        <label><input type="checkbox" id="sc-migrations" checked> Database Migrations</label>
+        <label><input type="checkbox" id="sc-css" checked> CSS Stylesheet</label>
+        <label><input type="checkbox" id="sc-js"> Client-Side JavaScript</label>
+        <label><input type="checkbox" id="sc-widget"> Dashboard Widget</label>
+      </div>
+
+      <div style="margin-top:1.5rem;">
+        <button type="submit" class="btn btn-primary" id="scaffold-btn">Generate .qpa Package</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Validator Tab -->
+<div class="addons-tab-content" id="tab-validate" style="display:none;">
+  <div class="card">
+    <h2 style="margin-top:0;">Addon Validator</h2>
+    <p class="form-hint" style="margin-bottom:1.5rem;">Upload a .qpa file to validate its structure, manifest, and security before publishing.</p>
+
+    <div class="devkit-validate-dropzone" id="validate-dropzone">
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+      <p>Drag & drop .qpa file here or click to browse</p>
+      <input type="file" id="validate-file" accept=".qpa,.zip" style="display:none">
+    </div>
+
+    <div id="validate-results" style="display:none;margin-top:1.5rem;">
+      <h3 style="font-size:0.95rem;margin-bottom:0.75rem;">Validation Results</h3>
+      <div id="validate-summary" style="margin-bottom:1rem;"></div>
+      <div id="validate-checks"></div>
+      <div id="validate-warnings" style="margin-top:0.75rem;"></div>
+      <div id="validate-errors" style="margin-top:0.75rem;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Registry Preview Tab -->
+<div class="addons-tab-content" id="tab-preview" style="display:none;">
+  <div class="card">
+    <h2 style="margin-top:0;">Registry Preview</h2>
+    <p class="form-hint" style="margin-bottom:1.5rem;">See how your addon will appear in the Browse Store. Fill in the Scaffolder form first.</p>
+
+    <div style="max-width:400px;">
+      <div class="addon-card card" id="preview-card" style="opacity:1;">
+        <div class="addon-card-header">
+          <div class="addon-icon" id="preview-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.968-.925a2.501 2.501 0 1 0-3.214 3.214c.446.166.855.497.925.968a.979.979 0 0 1-.276.837l-1.61 1.61a2.404 2.404 0 0 1-1.705.707 2.402 2.402 0 0 1-1.704-.706l-1.568-1.568a1.026 1.026 0 0 0-.877-.29c-.493.074-.84.504-1.02.968a2.5 2.5 0 1 1-3.237-3.237c.464-.18.894-.527.967-1.02a1.026 1.026 0 0 0-.289-.877l-1.568-1.568A2.402 2.402 0 0 1 1.998 12c0-.617.236-1.234.706-1.704L4.23 8.77c.24-.24.581-.353.917-.303.515.077.877.528 1.073 1.01a2.5 2.5 0 1 0 3.259-3.259c-.482-.196-.933-.558-1.01-1.073-.05-.336.062-.676.303-.917l1.525-1.525A2.402 2.402 0 0 1 12 2c.617 0 1.234.236 1.704.706l1.568 1.568c.23.23.556.338.877.29.493-.074.84-.504 1.02-.968a2.5 2.5 0 1 1 3.237 3.237c-.464.18-.894.527-.967 1.02Z"></path></svg>
+          </div>
+          <div class="addon-info">
+            <h3 id="preview-name">Your Addon Name</h3>
+            <span class="addon-version" id="preview-version">v1.0.0</span>
+            <span class="addon-category" id="preview-category">Gameplay</span>
+          </div>
+        </div>
+        <p class="addon-description" id="preview-description">Your addon description will appear here.</p>
+        <div class="addon-card-footer">
+          <span class="addon-author" id="preview-author">by Your Name</span>
+          <a href="#" class="btn btn-small btn-primary" onclick="return false;">Download</a>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:1.5rem;">
+      <h3 style="font-size:0.95rem;margin-bottom:0.5rem;">registry.json Entry</h3>
+      <pre class="devkit-code-block" id="preview-registry-json">{}</pre>
+      <button type="button" class="btn btn-small btn-outline" onclick="copyRegistryEntry()" style="margin-top:0.5rem;">Copy to Clipboard</button>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/foot') %>

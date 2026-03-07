@@ -1,0 +1,20 @@
+{
+  "name": "Your Addon Registry",
+  "version": "1.0.0",
+  "updated": "2026-01-01",
+  "addons": [
+    {
+      "id": "your-addon-id",
+      "name": "Your Addon Name",
+      "version": "1.0.0",
+      "author": "Your Name",
+      "description": "Short description of what the addon does.",
+      "category": "Gameplay",
+      "icon": "puzzle",
+      "type": "community",
+      "minAppVersion": "3.0.0",
+      "downloadUrl": "https://github.com/YOUR-USERNAME/YOUR-REPO/raw/main/packages/your-addon-id-1.0.0.qpa",
+      "repository": "https://github.com/YOUR-USERNAME/your-addon-id"
+    }
+  ]
+}

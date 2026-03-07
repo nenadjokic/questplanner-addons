@@ -1,0 +1,26 @@
+{
+  "id": "developer-kit",
+  "name": "Addon Developer Kit",
+  "version": "1.0.0",
+  "icon": "puzzle",
+  "category": "Development",
+  "description": "Documentation, scaffolder, validator, and preview tools for building Quest Planner addons.",
+  "author": "Quest Planner",
+  "type": "community",
+  "minAppVersion": "3.0.0",
+  "routes": [
+    { "path": "/developer-kit", "file": "routes/main.js" }
+  ],
+  "navItems": [
+    {
+      "label": "Developer Kit",
+      "href": "/developer-kit",
+      "icon": "puzzle",
+      "group": "admin",
+      "sort": 90,
+      "roles": ["admin"]
+    }
+  ],
+  "css": ["css/developer-kit.css"],
+  "js": ["js/developer-kit.js"]
+}
