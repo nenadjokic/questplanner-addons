@@ -1,5 +1,10 @@
 /* ─── Discord Bot Addon Styles ─────────────────────────── */
 
+.discord-restart-banner {
+  border-left: 4px solid var(--warning, #f39c12);
+  background: rgba(243, 156, 18, 0.08);
+}
+
 .discord-status-card {
   border-left: 4px solid var(--border);
 }

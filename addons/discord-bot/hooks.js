@@ -6,7 +6,12 @@ let botInstance = null;
 
 module.exports = {
   onLoad(ctx) {
-    // Start bot if settings are configured
+    // Stop previous bot instance if exists (prevents duplicate handlers on reload)
+    if (botInstance) {
+      botInstance.stop();
+      botInstance = null;
+    }
+
     botInstance = new QuestPlannerBot(ctx);
     botInstance.start().then(started => {
       if (started) {

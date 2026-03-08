@@ -6,6 +6,18 @@
   <a href="/" class="btn btn-outline">Back to Dashboard</a>
 </div>
 
+<% if (!botInitialized && botStatus === 'stopped') { %>
+<div class="card discord-restart-banner">
+  <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+    <div style="flex:1; min-width:200px;">
+      <strong style="color: var(--warning, #f39c12);">&#9888; Server restart required</strong>
+      <p class="text-muted" style="margin:0.3rem 0 0; font-size:0.9rem;">The Discord Bot addon was just enabled. A server restart is needed to initialize the bot process.</p>
+    </div>
+    <button class="btn btn-primary" onclick="restartServer()">Restart Server &amp; Start Bot</button>
+  </div>
+</div>
+<% } %>
+
 <!-- Bot Status Card -->
 <div class="card discord-status-card">
   <div class="discord-status-header">

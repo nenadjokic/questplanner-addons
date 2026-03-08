@@ -36,6 +36,7 @@ router.get('/', requireAdmin, (req, res) => {
   const totalUsers = db.prepare("SELECT COUNT(*) as c FROM users WHERE role != 'admin'").get().c;
 
   const bot = req.app.locals.discordBot;
+  const botInitialized = !!bot;
   const botStatus = bot ? bot.getStatus() : 'stopped';
   const botUsername = bot && bot.client && bot.ready ? bot.client.user.tag : null;
 
@@ -45,6 +46,7 @@ router.get('/', requireAdmin, (req, res) => {
     settings: { ...settings, views: req.app.get('views') },
     linkedCount,
     totalUsers,
+    botInitialized,
     botStatus,
     botUsername
   });
@@ -94,6 +96,12 @@ router.post('/settings', requireAdmin, async (req, res) => {
   }
 
   res.json({ success: true, message: 'Settings saved.' });
+});
+
+// ─── Restart Server ────────────────────────────────────────
+router.post('/restart-server', requireAdmin, (req, res) => {
+  res.json({ success: true, message: 'Server restarting...' });
+  setTimeout(() => process.exit(0), 500);
 });
 
 // ─── Bot Control ───────────────────────────────────────────

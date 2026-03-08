@@ -66,6 +66,19 @@ async function saveSettings(e) {
   }
 }
 
+async function restartServer() {
+  if (!confirm('This will restart the Quest Planner server. All users will be briefly disconnected. Continue?')) return;
+  try {
+    await postJson('/discord-bot/restart-server');
+    showToast('Server restarting... page will reload in 10 seconds.', 'success');
+    setTimeout(() => location.reload(), 10000);
+  } catch (err) {
+    // Connection will drop because server is restarting - that's expected
+    showToast('Server restarting... page will reload in 10 seconds.', 'success');
+    setTimeout(() => location.reload(), 10000);
+  }
+}
+
 async function controlBot(action) {
   try {
     const res = await postJson('/discord-bot/' + action);
