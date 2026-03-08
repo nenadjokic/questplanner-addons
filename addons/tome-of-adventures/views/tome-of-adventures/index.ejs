@@ -1,0 +1,117 @@
+<% const _v = Array.isArray(settings.views) ? settings.views[0] : settings.views; %>
+<%- include(_v + '/partials/head', { pageTitle: 'Tome of Adventures' }) %>
+
+<div class="page-header">
+  <h1>Tome of Adventures</h1>
+  <p class="form-hint">Import official D&D 5e adventures — auto-creates campaigns, NPCs, and maps.</p>
+</div>
+
+<% if (typeof flash_success !== 'undefined' && flash_success) { %>
+  <div class="alert alert-success"><%= flash_success %></div>
+<% } %>
+<% if (typeof flash_error !== 'undefined' && flash_error) { %>
+  <div class="alert alert-error"><%= flash_error %></div>
+<% } %>
+
+<!-- Copyright Disclaimer -->
+<div class="tome-disclaimer card" id="tome-disclaimer">
+  <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+    <div>
+      <strong>Copyright Notice</strong>
+      <p style="margin:0.25rem 0 0;font-size:0.85rem;color:var(--text-secondary);">
+        Adventure content is property of Wizards of the Coast. Data is sourced from 5e.tools (open-source community reference).
+        By importing, you confirm that you own the source material and use this for personal reference only.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Adventure Selector -->
+<div class="card tome-selector">
+  <h2>Import Adventure</h2>
+
+  <div class="tome-controls">
+    <div class="tome-search-row">
+      <select id="adventure-select" class="form-input" disabled>
+        <option value="">Loading adventures...</option>
+      </select>
+      <button type="button" class="btn btn-primary" id="import-btn" disabled>Import</button>
+    </div>
+  </div>
+
+  <!-- Adventure Preview -->
+  <div id="adventure-preview" style="display:none;" class="tome-preview">
+    <div class="tome-preview-header">
+      <div>
+        <h3 id="preview-name"></h3>
+        <div class="tome-preview-meta">
+          <span id="preview-author"></span>
+          <span id="preview-levels"></span>
+          <span id="preview-storyline"></span>
+        </div>
+      </div>
+      <span id="preview-status" class="addon-badge"></span>
+    </div>
+    <div id="preview-chapters" class="tome-chapters"></div>
+  </div>
+</div>
+
+<!-- Progress Bar -->
+<div id="import-progress" class="card" style="display:none;">
+  <h2>Importing...</h2>
+  <div class="tome-progress-bar">
+    <div class="tome-progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+  <p id="progress-text" class="form-hint" style="margin-top:0.5rem;"></p>
+</div>
+
+<!-- Previously Imported -->
+<% if (imports && imports.length > 0) { %>
+<div class="card" style="margin-top:1.5rem;">
+  <h2>Imported Adventures</h2>
+  <div class="tome-imports-list">
+    <% for (const imp of imports) { %>
+      <div class="tome-import-item">
+        <div>
+          <strong><%= imp.adventure_name %></strong>
+          <span class="form-hint" style="margin-left:0.5rem;">
+            <%= imp.npc_count %> NPCs, <%= imp.map_count %> maps
+          </span>
+        </div>
+        <div style="display:flex;gap:0.5rem;align-items:center;">
+          <span class="form-hint"><%= new Date(imp.imported_at).toLocaleDateString() %></span>
+          <% if (imp.campaign_id) { %>
+            <a href="/campaigns" class="btn btn-small btn-outline">View Campaign</a>
+          <% } %>
+          <button type="button" class="btn btn-small btn-outline" onclick="openMapEditor('<%= imp.campaign_id %>')">Edit Maps</button>
+          <button type="button" class="btn btn-small btn-outline" onclick="reimportAdventure('<%= imp.adventure_id %>', '<%= imp.adventure_name.replace(/'/g, "\\'") %>')">Re-import</button>
+          <button type="button" class="btn btn-small btn-outline" style="color:var(--error);border-color:var(--error);" onclick="deleteImport('<%= imp.adventure_id %>', '<%= imp.adventure_name.replace(/'/g, "\\'") %>')">Delete</button>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
+<% } %>
+
+<!-- Map Hierarchy Editor Modal -->
+<div id="map-editor-overlay" class="tome-modal-overlay" style="display:none;">
+  <div class="tome-modal">
+    <div class="tome-modal-header">
+      <h2>Organize Map Hierarchy</h2>
+      <button type="button" class="tome-modal-close" onclick="closeMapEditor()">&times;</button>
+    </div>
+    <p class="form-hint" style="margin-bottom:1rem;">Set parent maps to create a hierarchy. Child maps appear as pins on their parent map.</p>
+    <div id="map-editor-list" class="tome-map-editor-list">
+      <p class="form-hint">Loading maps...</p>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:0.5rem;margin-top:1rem;">
+      <button type="button" class="btn btn-outline" onclick="closeMapEditor()">Cancel</button>
+      <button type="button" class="btn btn-primary" id="save-maps-btn" onclick="saveMapHierarchy()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="/addons/tome-of-adventures/js/tome.js?v=1.0.1"></script>
+
+<%- include(_v + '/partials/foot') %>

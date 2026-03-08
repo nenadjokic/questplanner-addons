@@ -86,7 +86,7 @@ for (const dir of fs.readdirSync(addonsDir, { withFileTypes: true })) {
   if (!fs.existsSync(manifestPath)) continue;
   const m = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   const pkgName = m.id + '-' + m.version + '.qpa';
-  addons.push({
+  const entry = {
     id: m.id,
     name: m.name,
     version: m.version,
@@ -98,7 +98,14 @@ for (const dir of fs.readdirSync(addonsDir, { withFileTypes: true })) {
     minAppVersion: m.minAppVersion || '3.0.0',
     downloadUrl: 'https://github.com/nenadjokic/questplanner-addons/raw/main/packages/' + pkgName,
     repository: 'https://github.com/nenadjokic/questplanner-addons'
-  });
+  };
+  if (m.dependencies && typeof m.dependencies === 'object' && !Array.isArray(m.dependencies) && Object.keys(m.dependencies).length > 0) {
+    entry.dependencies = m.dependencies;
+  }
+  if (m.softDependencies && typeof m.softDependencies === 'object' && Object.keys(m.softDependencies).length > 0) {
+    entry.softDependencies = m.softDependencies;
+  }
+  addons.push(entry);
 }
 
 const registry = {
