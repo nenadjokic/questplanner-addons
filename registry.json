@@ -32,14 +32,14 @@
     {
       "id": "tome-of-adventures",
       "name": "Tome of Adventures",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "Quest Planner",
       "description": "Import official D&D 5e adventures from 5etools — auto-creates campaigns, NPCs with full stat blocks, and maps.",
       "category": "DM Tools",
       "icon": "book",
       "type": "community",
       "minAppVersion": "3.0.3",
-      "downloadUrl": "https://github.com/nenadjokic/questplanner-addons/raw/main/packages/tome-of-adventures-1.0.0.qpa",
+      "downloadUrl": "https://github.com/nenadjokic/questplanner-addons/raw/main/packages/tome-of-adventures-1.1.0.qpa",
       "repository": "https://github.com/nenadjokic/questplanner-addons",
       "dependencies": {
         "maps": ">=1.0.0",

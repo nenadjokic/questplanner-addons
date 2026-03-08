@@ -248,7 +248,7 @@ class AdventureImporter {
       // Non-fatal — NPC just won't have an avatar
     }
 
-    this.db.prepare(`
+    const result = this.db.prepare(`
       INSERT INTO npc_tokens (name, avatar, current_hp, max_hp, notes, category_id, created_by, created_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
     `).run(
@@ -261,7 +261,32 @@ class AdventureImporter {
       this.userId
     );
 
+    // Also insert into junction table for multi-category support
+    const npcId = result.lastInsertRowid;
+    try {
+      this.db.prepare('INSERT OR IGNORE INTO npc_token_categories (npc_token_id, category_id) VALUES (?, ?)').run(npcId, categoryId);
+    } catch (e) {}
+
     return true;
+  }
+
+  /**
+   * HTTPS GET with redirect following (dnd5eapi.co uses 301 redirects)
+   */
+  _httpsGet(url, timeout = 5000, maxRedirects = 3) {
+    return new Promise((resolve) => {
+      const doGet = (u, redirectsLeft) => {
+        https.get(u, { timeout }, (resp) => {
+          if ((resp.statusCode === 301 || resp.statusCode === 302) && resp.headers.location && redirectsLeft > 0) {
+            const loc = resp.headers.location.startsWith('http') ? resp.headers.location : 'https://www.dnd5eapi.co' + resp.headers.location;
+            resp.resume(); // drain response
+            return doGet(loc, redirectsLeft - 1);
+          }
+          resolve(resp);
+        }).on('error', () => resolve(null));
+      };
+      doGet(url, maxRedirects);
+    });
   }
 
   /**
@@ -273,15 +298,15 @@ class AdventureImporter {
     const apiUrl = `https://www.dnd5eapi.co/api/monsters/${encodeURIComponent(slug)}`;
 
     // Step 1: Check if monster has an image
-    const monsterData = await new Promise((resolve, reject) => {
-      https.get(apiUrl, { timeout: 5000 }, (resp) => {
-        if (resp.statusCode !== 200) return resolve(null);
-        let data = '';
-        resp.on('data', chunk => data += chunk);
-        resp.on('end', () => {
-          try { resolve(JSON.parse(data)); } catch (e) { resolve(null); }
-        });
-      }).on('error', () => resolve(null));
+    const resp = await this._httpsGet(apiUrl);
+    if (!resp || resp.statusCode !== 200) return null;
+
+    const monsterData = await new Promise((resolve) => {
+      let data = '';
+      resp.on('data', chunk => data += chunk);
+      resp.on('end', () => {
+        try { resolve(JSON.parse(data)); } catch (e) { resolve(null); }
+      });
     });
 
     if (!monsterData || !monsterData.image) return null;
@@ -291,19 +316,19 @@ class AdventureImporter {
     const avatarsDir = path.join(this.dataDir, 'avatars');
     if (!fs.existsSync(avatarsDir)) fs.mkdirSync(avatarsDir, { recursive: true });
 
+    const imgResp = await this._httpsGet(imageUrl, 8000);
+    if (!imgResp || imgResp.statusCode !== 200) return null;
+
     return new Promise((resolve) => {
-      https.get(imageUrl, { timeout: 8000 }, (resp) => {
-        if (resp.statusCode !== 200) return resolve(null);
-        const ct = resp.headers['content-type'] || '';
-        const extMap = { 'image/jpeg': '.jpg', 'image/png': '.png', 'image/gif': '.gif', 'image/webp': '.webp' };
-        const ext = extMap[ct.split(';')[0].trim()] || '.png';
-        const fname = 'npc-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6) + ext;
-        const fpath = path.join(avatarsDir, fname);
-        const ws = fs.createWriteStream(fpath);
-        resp.pipe(ws);
-        ws.on('finish', () => resolve(fname));
-        ws.on('error', () => resolve(null));
-      }).on('error', () => resolve(null));
+      const ct = imgResp.headers['content-type'] || '';
+      const extMap = { 'image/jpeg': '.jpg', 'image/png': '.png', 'image/gif': '.gif', 'image/webp': '.webp' };
+      const ext = extMap[ct.split(';')[0].trim()] || '.png';
+      const fname = 'npc-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6) + ext;
+      const fpath = path.join(avatarsDir, fname);
+      const ws = fs.createWriteStream(fpath);
+      imgResp.pipe(ws);
+      ws.on('finish', () => resolve(fname));
+      ws.on('error', () => resolve(null));
     });
   }
 
@@ -420,7 +445,11 @@ class AdventureImporter {
       "SELECT id FROM maps WHERE name = ? AND created_by = ?"
     ).get(mapName, this.userId);
 
-    if (existingMap) return false;
+    if (existingMap) {
+      // Re-link orphaned map to this campaign
+      this.db.prepare('UPDATE maps SET campaign_id = ? WHERE id = ? AND campaign_id IS NULL').run(campaignId, existingMap.id);
+      return false;
+    }
 
     // Download image
     let imageBuffer;

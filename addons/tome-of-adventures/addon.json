@@ -1,7 +1,7 @@
 {
   "id": "tome-of-adventures",
   "name": "Tome of Adventures",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "icon": "book",
   "category": "DM Tools",
   "description": "Import official D&D 5e adventures from 5etools — auto-creates campaigns, NPCs with full stat blocks, and maps.",
