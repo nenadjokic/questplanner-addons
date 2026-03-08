@@ -2,16 +2,39 @@
  * GitHub raw content fetcher for 5e.tools mirror data
  */
 
+const https = require('https');
+
 const BASE_URL = 'https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main';
+
+/**
+ * Simple HTTPS GET that returns a Buffer — works on all Node versions
+ */
+function httpsGet(url, timeout = 30000) {
+  return new Promise((resolve, reject) => {
+    const req = https.get(url, { timeout }, (resp) => {
+      if (resp.statusCode >= 300 && resp.statusCode < 400 && resp.headers.location) {
+        return httpsGet(resp.headers.location, timeout).then(resolve).catch(reject);
+      }
+      if (resp.statusCode !== 200) {
+        resp.resume();
+        return reject(new Error(`HTTP ${resp.statusCode} for ${url}`));
+      }
+      const chunks = [];
+      resp.on('data', (chunk) => chunks.push(chunk));
+      resp.on('end', () => resolve(Buffer.concat(chunks)));
+    });
+    req.on('error', reject);
+    req.on('timeout', () => { req.destroy(); reject(new Error('Request timed out')); });
+  });
+}
 
 /**
  * Fetch JSON from GitHub raw content
  */
 async function fetchJSON(path) {
   const url = `${BASE_URL}/${path}`;
-  const response = await fetch(url, { signal: AbortSignal.timeout(30000) });
-  if (!response.ok) throw new Error(`GitHub fetch failed: ${response.status} for ${path}`);
-  return response.json();
+  const buf = await httpsGet(url);
+  return JSON.parse(buf.toString('utf8'));
 }
 
 /**
@@ -75,9 +98,7 @@ const IMG_BASE_URL = 'https://raw.githubusercontent.com/5etools-mirror-3/5etools
 
 async function fetchImage(imagePath) {
   const url = `${IMG_BASE_URL}/${imagePath}`;
-  const response = await fetch(url, { signal: AbortSignal.timeout(60000) });
-  if (!response.ok) throw new Error(`Image fetch failed: ${response.status} for ${imagePath}`);
-  return Buffer.from(await response.arrayBuffer());
+  return httpsGet(url, 60000);
 }
 
 module.exports = {
