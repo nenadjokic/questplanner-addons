@@ -6,7 +6,8 @@ Official addon registry for [Quest Planner](https://github.com/nenadjokic/dndpla
 
 | Addon | Description | Version |
 |-------|-------------|---------|
-| [Addon Developer Kit](packages/) | Documentation, scaffolder, validator, and preview tools for building addons | 1.0.0 |
+| [Addon Developer Kit](addons/developer-kit/) | Documentation, scaffolder, validator, and preview tools for building addons | 1.0.0 |
+| [Discord Bot Integration](addons/discord-bot/) | Full Discord bot with slash commands, emoji RSVP, dice rolls, and live campaign notifications | 1.0.0 |
 
 ## Installing Addons
 
