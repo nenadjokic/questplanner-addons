@@ -19,14 +19,14 @@
     {
       "id": "discord-bot",
       "name": "Discord Bot Integration",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "Quest Planner",
-      "description": "Full Discord bot with slash commands, emoji RSVP, dice rolls, and live campaign notifications.",
+      "description": "Full Discord bot with slash commands, emoji RSVP, reply voting, dice rolls, and live campaign notifications.",
       "category": "Integration",
       "icon": "send",
       "type": "community",
-      "minAppVersion": "3.0.0",
-      "downloadUrl": "https://github.com/nenadjokic/questplanner-addons/raw/main/packages/discord-bot-1.0.0.qpa",
+      "minAppVersion": "3.0.12",
+      "downloadUrl": "https://github.com/nenadjokic/questplanner-addons/raw/main/packages/discord-bot-1.1.0.qpa",
       "repository": "https://github.com/nenadjokic/questplanner-addons"
     },
     {
