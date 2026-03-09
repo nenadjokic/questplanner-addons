@@ -1,0 +1,16 @@
+{
+  "id": "telegram-bot",
+  "name": "Telegram Notifications",
+  "version": "1.0.0",
+  "icon": "send",
+  "category": "Communication",
+  "description": "Send session notifications to a Telegram chat or group via a Telegram bot.",
+  "author": "Quest Planner",
+  "minAppVersion": "3.0.11",
+  "routes": ["routes/main.js"],
+  "navItems": [],
+  "css": ["public/css/telegram-bot.css"],
+  "js": [],
+  "dependencies": {},
+  "softDependencies": {}
+}

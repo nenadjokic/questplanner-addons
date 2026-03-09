@@ -1,0 +1,16 @@
+{
+  "id": "viber-bot",
+  "name": "Viber Notifications",
+  "version": "1.0.0",
+  "icon": "send",
+  "category": "Communication",
+  "description": "Send session notifications to Viber via a Viber bot.",
+  "author": "Quest Planner",
+  "minAppVersion": "3.0.11",
+  "routes": ["routes/main.js"],
+  "navItems": [],
+  "css": ["public/css/viber-bot.css"],
+  "js": [],
+  "dependencies": {},
+  "softDependencies": {}
+}

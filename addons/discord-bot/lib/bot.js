@@ -9,6 +9,7 @@ class QuestPlannerBot {
     this.client = null;
     this.ready = false;
     this._destroyed = false;
+    this._handlerId = 0; // Guard against duplicate handlers after restart
   }
 
   getSettings() {
@@ -37,11 +38,14 @@ class QuestPlannerBot {
         this.ready = true;
       });
 
+      // Increment handler ID to invalidate any stale handlers from previous client
+      this._handlerId++;
+      const handlerId = this._handlerId;
+
       // Register event handlers
-      this._setupInteractionHandler(settings);
-      if (settings.enable_emoji_rsvp) {
-        this._setupReactionHandler();
-      }
+      this._setupInteractionHandler(settings, handlerId);
+      this._setupReactionHandler(handlerId);
+      this._setupReplyVoteHandler(handlerId);
 
       await this.client.login(settings.bot_token);
 
@@ -120,8 +124,9 @@ class QuestPlannerBot {
   }
 
   // ─── Interaction Handler (Slash Commands) ────────────────
-  _setupInteractionHandler(settings) {
+  _setupInteractionHandler(settings, handlerId) {
     this.client.on('interactionCreate', async (interaction) => {
+      if (handlerId !== this._handlerId) return; // Stale handler guard
       if (!interaction.isChatInputCommand()) return;
       if (interaction.commandName !== 'quest') return;
 
@@ -467,10 +472,11 @@ class QuestPlannerBot {
   }
 
   // ─── Emoji RSVP Reaction Handler ─────────────────────────
-  _setupReactionHandler() {
+  _setupReactionHandler(handlerId) {
     const numberEmojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣'];
 
     this.client.on('messageReactionAdd', async (reaction, user) => {
+      if (handlerId !== this._handlerId) return;
       if (user.bot) return;
 
       // Fetch partial if needed
@@ -516,6 +522,7 @@ class QuestPlannerBot {
 
     // Handle reaction removal (un-vote)
     this.client.on('messageReactionRemove', async (reaction, user) => {
+      if (handlerId !== this._handlerId) return;
       if (user.bot) return;
 
       if (reaction.partial) {
@@ -546,8 +553,93 @@ class QuestPlannerBot {
     });
   }
 
+  // ─── Reply-based Vote Handler ───────────────────────────
+  _setupReplyVoteHandler(handlerId) {
+    // Keywords for vote status
+    const availableWords = ['mogu', 'mogem', 'mogem', 'da', 'dolazim', 'tu sam', 'available', 'yes', 'in', 'coming', '+1'];
+    const maybeWords = ['mozda', 'možda', 'maybe', 'nisam siguran', 'videcemo', 'videćemo', 'not sure'];
+    const unavailableWords = ['ne mogu', 'nemogu', 'ne', 'unavailable', 'no', 'out', 'skip', '-1', 'ne dolazim'];
+
+    this.client.on('messageCreate', async (message) => {
+      if (handlerId !== this._handlerId) return;
+      if (message.author.bot) return;
+      if (!message.reference) return; // Only process replies
+
+      // Check if this is a reply to an RSVP message
+      const rsvpMsg = this.db.prepare('SELECT * FROM discord_rsvp_messages WHERE message_id = ?').get(message.reference.messageId);
+      if (!rsvpMsg) return;
+
+      // Find linked QP account
+      const link = this.db.prepare('SELECT * FROM discord_linked_accounts WHERE discord_user_id = ? AND verified_at IS NOT NULL').get(message.author.id);
+      if (!link) {
+        try {
+          await message.reply('⚠️ Your Discord account is not linked to Quest Planner. Use `/quest link <username>` to connect.');
+        } catch (e) { /* ignore */ }
+        return;
+      }
+
+      const text = message.content.toLowerCase().trim();
+      let voteStatus = null;
+
+      // Check unavailable first (because "ne mogu" contains "mogu")
+      if (unavailableWords.some(w => text === w || text.startsWith(w))) {
+        voteStatus = 'unavailable';
+      } else if (availableWords.some(w => text === w || text.startsWith(w))) {
+        voteStatus = 'available';
+      } else if (maybeWords.some(w => text === w || text.startsWith(w))) {
+        voteStatus = 'maybe';
+      }
+
+      if (!voteStatus) return; // Not a vote reply
+
+      // Parse slot mapping — find slot to vote on
+      const slotMapping = JSON.parse(rsvpMsg.slot_mapping);
+      const slotIds = Object.values(slotMapping);
+
+      // Check if reply mentions a specific slot number (e.g. "mogu 1" or "da 2")
+      const numMatch = text.match(/(\d+)/);
+      let targetSlotIds = slotIds;
+
+      if (numMatch) {
+        const slotIndex = parseInt(numMatch[1], 10) - 1; // 1-based to 0-based
+        if (slotMapping[slotIndex]) {
+          targetSlotIds = [slotMapping[slotIndex]];
+        }
+      }
+
+      // Upsert votes for target slots
+      const upsertVote = this.db.prepare(`
+        INSERT INTO votes (slot_id, user_id, status)
+        VALUES (?, ?, ?)
+        ON CONFLICT(slot_id, user_id) DO UPDATE SET status = excluded.status
+      `);
+
+      for (const slotId of targetSlotIds) {
+        upsertVote.run(slotId, link.user_id, voteStatus);
+      }
+
+      // Broadcast SSE update
+      if (this.sse) {
+        this.sse.broadcast('session-updated', { sessionId: rsvpMsg.session_id });
+      }
+
+      // Confirm with reaction
+      const statusEmoji = { available: '✅', maybe: '🤔', unavailable: '❌' };
+      try {
+        await message.react(statusEmoji[voteStatus]);
+      } catch (e) { /* ignore */ }
+
+      const user = this.db.prepare('SELECT username FROM users WHERE id = ?').get(link.user_id);
+      const slotsText = targetSlotIds.length === slotIds.length ? 'all slots' : `slot ${numMatch[1]}`;
+      console.log(`[discord-bot] Reply vote: ${user?.username || link.user_id} voted ${voteStatus} for ${slotsText} on session ${rsvpMsg.session_id}`);
+    });
+  }
+
   // ─── Live Notifications ──────────────────────────────────
   async sendNotification(type, data) {
+    // Treat reopened sessions as new creations (re-post with RSVP emojis)
+    if (type === 'session_reopened') type = 'session_created';
+
     const settings = this.getSettings();
     if (!this.ready || !settings.enable_live_notifications || !settings.notification_channel_id) return;
 
@@ -596,7 +688,7 @@ class QuestPlannerBot {
           .setDescription(data.description || 'A new quest awaits!');
         if (slotLines.length) {
           embed.addFields({ name: 'Proposed Dates', value: slotLines.join('\n') });
-          embed.setFooter({ text: 'React with the number for dates you\'re available!' });
+          embed.setFooter({ text: 'React with a number or reply: mogu/da/ne mogu/mozda' });
         }
         return embed;
       }

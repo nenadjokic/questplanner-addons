@@ -1,7 +1,7 @@
 {
   "name": "Quest Planner Official Addon Registry",
   "version": "1.0.0",
-  "updated": "2026-03-08",
+  "updated": "2026-03-09",
   "addons": [
     {
       "id": "developer-kit",
@@ -30,6 +30,19 @@
       "repository": "https://github.com/nenadjokic/questplanner-addons"
     },
     {
+      "id": "telegram-bot",
+      "name": "Telegram Notifications",
+      "version": "1.0.0",
+      "author": "Quest Planner",
+      "description": "Send session notifications to a Telegram chat or group via a Telegram bot.",
+      "category": "Communication",
+      "icon": "send",
+      "type": "community",
+      "minAppVersion": "3.0.11",
+      "downloadUrl": "https://github.com/nenadjokic/questplanner-addons/raw/main/packages/telegram-bot-1.0.0.qpa",
+      "repository": "https://github.com/nenadjokic/questplanner-addons"
+    },
+    {
       "id": "tome-of-adventures",
       "name": "Tome of Adventures",
       "version": "1.2.0",
@@ -45,6 +58,19 @@
         "maps": ">=1.0.0",
         "campaigns": ">=1.0.0"
       }
+    },
+    {
+      "id": "viber-bot",
+      "name": "Viber Notifications",
+      "version": "1.0.0",
+      "author": "Quest Planner",
+      "description": "Send session notifications to Viber via a Viber bot.",
+      "category": "Communication",
+      "icon": "send",
+      "type": "community",
+      "minAppVersion": "3.0.11",
+      "downloadUrl": "https://github.com/nenadjokic/questplanner-addons/raw/main/packages/viber-bot-1.0.0.qpa",
+      "repository": "https://github.com/nenadjokic/questplanner-addons"
     }
   ]
 }

@@ -1,8 +1,10 @@
 'use strict';
 
+const path = require('path');
 const QuestPlannerBot = require('./lib/bot');
 
 let botInstance = null;
+let notifier = null;
 
 module.exports = {
   onLoad(ctx) {
@@ -11,6 +13,9 @@ module.exports = {
       botInstance.stop();
       botInstance = null;
     }
+
+    // Get notifier reference (works for both preinstalled and community addons)
+    notifier = require(path.join(ctx.dataDir, '..', 'helpers', 'notifier'));
 
     botInstance = new QuestPlannerBot(ctx);
     botInstance.start().then(started => {
@@ -21,11 +26,21 @@ module.exports = {
       console.error('[discord-bot] Failed to start bot:', err.message);
     });
 
+    // Register with central notifier
+    notifier.register('discord-bot', (type, data) => {
+      if (botInstance && botInstance.ready) {
+        return botInstance.sendNotification(type, data);
+      }
+    });
+
     // Make bot instance available to routes via app.locals
     ctx.app.locals.discordBot = botInstance;
   },
 
   onDisable(ctx) {
+    if (notifier) {
+      notifier.unregister('discord-bot');
+    }
     if (botInstance) {
       botInstance.stop();
       botInstance = null;
