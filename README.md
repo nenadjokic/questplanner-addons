@@ -7,7 +7,10 @@ Official addon registry for [Quest Planner](https://github.com/nenadjokic/dndpla
 | Addon | Description | Version |
 |-------|-------------|---------|
 | [Addon Developer Kit](addons/developer-kit/) | Documentation, scaffolder, validator, and preview tools for building addons | 1.0.0 |
-| [Discord Bot Integration](addons/discord-bot/) | Full Discord bot with slash commands, emoji RSVP, dice rolls, and live campaign notifications | 1.0.0 |
+| [Discord Bot Integration](addons/discord-bot/) | Full Discord bot with slash commands, emoji RSVP, reply voting, dice rolls, and live notifications | 1.1.0 |
+| [Telegram Notifications](addons/telegram-bot/) | Send session notifications to a Telegram chat or group via a Telegram bot | 1.0.0 |
+| [Tome of Adventures](addons/tome-of-adventures/) | Import official D&D 5e adventures from 5etools — auto-creates campaigns, NPCs, and maps | 1.2.0 |
+| [Viber Notifications](addons/viber-bot/) | Send session notifications to Viber via a Viber bot | 1.0.0 |
 
 ## Installing Addons
 
